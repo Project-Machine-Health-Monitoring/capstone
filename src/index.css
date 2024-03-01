@@ -11,3 +11,39 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+img {
+  max-width: 33%;
+  height: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.container {
+  text-align: center;
+  margin-left: 25%;
+  margin-right: 25%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+h1 {
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: larger;
+}
+
+h2 {
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size:medium
+}
+
+p {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
