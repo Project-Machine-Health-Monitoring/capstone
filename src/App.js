@@ -1,92 +1,47 @@
-import logo from "./media/logo.png"
 import React, { useEffect, useState } from 'react';
 import Chart from 'chart.js/auto';
-import supabase from './database/supabase';
+import calculateMean from './components/mean';
+import renderChart from './components/graph';
+import fetchData from './database/FetchData';
+import logo from "./media/logo.png"
 
 const App = () => {
-  const [data, setData] = useState([]);
 
+  //Fetch Data
+  const [data, setData] = useState([]);
   useEffect(() => {
-    fetchData();
+    fetchData().then(data => setData(data));
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const { data, error } = await supabase.from('measure').select('t, x, y, z');
-      if (error) {
-        throw error;
-      }
-      setData(data);
-    } catch (error) {
-      console.error('Error fetching data:', error.message);
-    }
-  };
+  //Statistical Analysis
+  const [meanValue, setMeanValue] = useState({ x: 0, y: 0, z: 0 });
+  const [selectedComponent, setSelectedComponent] = useState(null);
 
   useEffect(() => {
-    if (data.length > 0) {
-      renderChart();
+    if (data.length > 0 && selectedComponent) {
+      const means = calculateMean(data);
+      setMeanValue(means);
     }
-  }, [data]);
+  }, [data, selectedComponent]);
 
-  const renderChart = () => {
-    const ctx = document.getElementById('myChart');
-
-    // Check if a chart instance already exists then destroy it
-    if (ctx.chart) {
-      ctx.chart.destroy();
-    }
-
-    // Render new chart
-    ctx.chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: data.map(entry => entry.t),
-        datasets: [
-          {
-            label: 'X',
-            data: data.map(entry => entry.x),
-            borderColor: 'red',
-            borderWidth: 1,
-            fill: false
-          },
-          {
-            label: 'Y',
-            data: data.map(entry => entry.y),
-            borderColor: 'blue',
-            borderWidth: 1,
-            fill: false
-          },
-          {
-            label: 'Z',
-            data: data.map(entry => entry.z),
-            borderColor: 'green',
-            borderWidth: 1,
-            fill: false
-          }
-        ]
-      },
-      options: {
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true
-            }
-          }]
-        },
-        plugins: {
-          datalabels: {
-            display: true,
-            color: 'black',
-            align: 'top',
-            formatter: function(value, context) {
-              return context.chart.data.labels[context.dataIndex];
-            }
-          }
-        }
-      }
-    });
+  const calculateAndSetMean = (data, component) => {
+    const means = calculateMean(data);
+    setMeanValue(means[component]);
   };
 
+  const handleComponentChange = (event) => {
+    const selected = event.target.value;
+    setSelectedComponent(selected);
+    calculateAndSetMean(data, selected);
+  };
+
+  //Render Graph
+  const updateGraph = async () => {
+    const newData = await fetchData();
+    setData(newData);
+    renderChart(newData);
+  };
+  
   return (
     <div>
       <div className="container">
@@ -96,15 +51,25 @@ const App = () => {
         <p><b>Students:</b> Ali Abdulla, Imran Nasir, Shahd Hamad</p>
         <p><b>Supervisor:</b> Dr. Shazali Osman</p>
         <canvas id="myChart" style={{ display: 'block', margin: '0 auto', border: '2px solid black', width:'100%'}}></canvas>
-        <h1>Mean: | Variance: | Skewness: | Curtosis: </h1>
 
+        <div>
+          <select value={selectedComponent} onChange={handleComponentChange}>
+            <option value="x">X</option>
+            <option value="y">Y</option>
+            <option value="z">Z</option>
+          </select>
+        </div>
+        {meanValue !== null && selectedComponent && (
+          <h1>Mean {selectedComponent.toUpperCase()}: {meanValue[selectedComponent]}</h1>
+        )}
+        
         <div className="navigation-bar">
-        <ul>
-          <button>Help</button>
-          <button>Settings</button>
-        </ul>
-      </div>
-
+          <ul>
+            <button onClick={updateGraph}>Update Graph</button>
+            <button>Help</button>
+            <button>Settings</button>
+          </ul>
+        </div>
       </div>
     </div>
   );
