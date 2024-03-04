@@ -1,76 +1,126 @@
+import './index2.css'
 import React, { useEffect, useState } from 'react';
-import Chart from 'chart.js/auto';
 import calculateMean from './components/mean';
+import calculateStandardDeviation from './components/stdDev';
+import calculateVariance from './components/variance';
+import exportCSV from './components/exportCSV';
+import exportImage from './components/exportImage';
+import showHelpPopup from './components/help'
 import renderChart from './components/graph';
 import fetchData from './database/FetchData';
 import logo from "./media/logo.png"
+import calculateKurtosis from './components/kurtosis';
 
 const App = () => {
 
-  //Fetch Data
+  // Export Data
+  const exportData = () => {
+    exportCSV(data);
+  };
+
+  // Export Graph
+  const exportGraph = () => {
+    exportImage('myChart', 'graph.png'); // Pass the id of the canvas and filename
+  };
+
+  // Fetch Data
   const [data, setData] = useState([]);
   useEffect(() => {
     fetchData().then(data => setData(data));
   }, []);
 
-  //Statistical Analysis
-  const [meanValue, setMeanValue] = useState({ x: 0, y: 0, z: 0 });
-  const [selectedComponent, setSelectedComponent] = useState(null);
+  // Popup Window for Help Button
+  const helpPopup = () => {
+    showHelpPopup();
+  }
 
-  useEffect(() => {
-    if (data.length > 0 && selectedComponent) {
-      const means = calculateMean(data);
-      setMeanValue(means);
-    }
-  }, [data, selectedComponent]);
-
-  const calculateAndSetMean = (data, component) => {
-    const means = calculateMean(data);
-    setMeanValue(means[component]);
-  };
-
-  const handleComponentChange = (event) => {
-    const selected = event.target.value;
-    setSelectedComponent(selected);
-    calculateAndSetMean(data, selected);
-  };
-
-  //Render Graph
+  // Render Graph
   const updateGraph = async () => {
     const newData = await fetchData();
     setData(newData);
     renderChart(newData);
   };
+
+  // Statistical Analysis
+  const [statisticValue, setStatisticValue] = useState({ mean: 0, variance: 0, stdDev: 0, kurtosis: 0 });
+  const [selectedComponent, setSelectedComponent] = useState(null);
+
+  useEffect(() => {
+    if (data.length > 0 && selectedComponent) {
+      const mean = calculateMean(data, selectedComponent);
+      const variance = calculateVariance(data, selectedComponent); // Calculate variance
+      const stdDev = calculateStandardDeviation(data, selectedComponent); // Calculate standard deviation
+      const kurtosis = calculateKurtosis(data, selectedComponent); // Calculate standard deviation
+      setStatisticValue({ mean, variance, stdDev, kurtosis });
+    }
+  }, [data, selectedComponent]);
+
+  const handleComponentChange = (event) => {
+    const selected = event.target.value;
+    setSelectedComponent(selected);
+  };
   
   return (
     <div>
-      <div className="container">
+      
+      {/* Header */}
+      <header>
         <img src={logo} alt="AUBH"/>
-        <h1>Development of a system that provides diagnostic and prognostic information on a machinery’s health using a wireless MEMS smart sensor</h1>
-        <h2>COSC491L / CMPE495B - Senior/Capstone Project Laboratory - Spring Semester 2023/2024</h2>
-        <p><b>Students:</b> Ali Abdulla, Imran Nasir, Shahd Hamad</p>
-        <p><b>Supervisor:</b> Dr. Shazali Osman</p>
-        <canvas id="myChart" style={{ display: 'block', margin: '0 auto', border: '2px solid black', width:'100%'}}></canvas>
+        <h1>Development of a system that provides diagnostic and prognostic information on a machinery's health using a wireless MEMS smart sensor</h1>
+      </header>
 
-        <div>
+      {/* Graph */}
+      <main>
+        <div className='chart-container'>
+          <canvas id="myChart"></canvas>
+          <ul>
+          <button onClick={updateGraph}>Update Graph</button>
+          <button onClick={exportGraph}>Export Graph</button>
+          <button onClick={exportData}>Export Data</button>
           <select value={selectedComponent} onChange={handleComponentChange}>
             <option value="x">X</option>
             <option value="y">Y</option>
             <option value="z">Z</option>
           </select>
-        </div>
-        {meanValue !== null && selectedComponent && (
-          <h1>Mean {selectedComponent.toUpperCase()}: {meanValue[selectedComponent]}</h1>
+          <button onClick={helpPopup}>Help</button>
+          <button>Settings</button>
+        </ul>
+        {selectedComponent && (
+          <div className='statsOuterDiv'>
+            <div className='statsInnerDiv1'>
+              <p><b>Mean:</b> {statisticValue.mean}</p>
+            </div>
+            <div className='statsInnerDiv2'>
+              <p><b>Variance:</b> {statisticValue.variance}</p>
+            </div>
+            <div className='statsInnerDiv3'>
+              <p><b>Standard Deviation:</b> {statisticValue.stdDev}</p>
+            </div>
+            <div className='statsInnerDiv4'>
+              <p><b>Kurtosis:</b> {statisticValue.kurtosis}</p>
+            </div>
+          </div>
         )}
-        
-        <div className="navigation-bar">
-          <ul>
-            <button onClick={updateGraph}>Update Graph</button>
-            <button>Help</button>
-            <button>Settings</button>
-          </ul>
         </div>
-      </div>
+      </main>
+
+      {/* Footer */}
+      <footer>
+        <div className='footerOuterDiv'>
+          <div className='footerInnerDiv1'>
+            <p><b>Course: </b>COSC491L / CMPE495B - Senior/Capstone Project Laboratory</p>
+          </div>
+          <div className='footerInnerDiv2'>
+            <p><b>Semester: </b>Spring Semester 2023/2024</p>
+          </div>
+          <div className='footerInnerDiv3'>
+            <p><b>Students: </b>Ali Abdulla, Imran Nasir, Shahd Hamad</p>
+          </div>
+          <div className='footerInnerDiv4'>
+            <p><b>Supervisor: </b>Dr. Shazali Osman</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
