@@ -9,6 +9,7 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+/*
 header {
     top: 0;
     background-color: #00235a;
@@ -25,11 +26,34 @@ header h1 {
     margin-left: 1%;
     font-size: xx-large;
 }
+*/
+
+header {
+    top: 0;
+    background-color: #00235a;
+    color: white;
+    position: fixed;
+    text-align: center;
+    width: 100%;
+    max-height: 10%;
+    padding-top: 0.3%;
+    padding-bottom: 0.3%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: left;
+}
+
+.headerInnerDiv1, .headerInnerDiv2{
+    text-align: left;
+    padding-right: 3%;
+}
 
 main {
     width: 100%;
     padding-top: 7%;
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     text-align: center;
 }
@@ -70,6 +94,7 @@ footer {
 .footerOuterDiv {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .footerInnerDiv1, .footerInnerDiv2, .footerInnerDiv3, .footerInnerDiv4 {
