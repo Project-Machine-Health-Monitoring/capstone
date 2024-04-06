@@ -18,6 +18,7 @@ const App = () => {
   const [selectedSource, setSelectedSource] = useState('Raw');
 
   useEffect(() => {
+<<<<<<< HEAD
     updateGraph(); // Initial graph rendering when component mounts
   }, [selectedSource]); // Re-render graph when selectedSource changes
 
@@ -29,10 +30,29 @@ const App = () => {
     setSelectedSource(event.target.value);
   };
 
+=======
+    fetchData(selectedSource).then(data => setData(data));
+  }, [selectedSource]);
+
+  // Handler for component change
+  const handleComponentChange = (event) => {
+    const selected = event.target.value;
+    setSelectedComponent(selected);
+  };
+
+  // Handler for data source change
+  const handleSourceChange = (event) => {
+    const selected = event.target.value;
+    setSelectedSource(selected);
+  };
+
+  // Popup Window for Help Button
+>>>>>>> 81a0759c0135db0df989256eaf5630836d99b140
   const helpPopup = () => {
     showHelpPopup();
   };
 
+<<<<<<< HEAD
   const exportData = () => {
     exportCSV(data);
   };
@@ -60,6 +80,15 @@ const App = () => {
     }
   };
   
+=======
+  // Render Graph
+  const updateGraph = async () => {
+    const newData = await fetchData(selectedSource);
+    setData(newData);
+    renderChart(newData);
+  };
+
+>>>>>>> 81a0759c0135db0df989256eaf5630836d99b140
   // Statistical Analysis
   const [statisticValue, setStatisticValue] = useState({ mean: 0, variance: 0, stdDev: 0, kurtosis: 0 });
   useEffect(() => {
@@ -80,7 +109,11 @@ const App = () => {
           <p><b>University: </b>American University of Bahrain</p>
         </div>
         <div className='headerInnerDiv2'>
+<<<<<<< HEAD
           <p><b>Project Title: </b>Smart Wireless Sensor for Machine's Health Condition Monitoring</p>
+=======
+          <p><b>Project Title: </b>Development of a system that provides diagnostic and prognostic information on a machinery's health using a wireless MEMS smart sensor</p>
+>>>>>>> 81a0759c0135db0df989256eaf5630836d99b140
         </div>
       </header>
 
@@ -103,7 +136,11 @@ const App = () => {
               <option value="TSA">TSA</option>
             </select>
             <button onClick={helpPopup}>Help</button>
+<<<<<<< HEAD
             <button onClick={openSettingsPopup}>Settings</button>
+=======
+            <button>Settings</button>
+>>>>>>> 81a0759c0135db0df989256eaf5630836d99b140
           </ul>
           {selectedComponent && (
             <div className='statsOuterDiv'>
