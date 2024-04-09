@@ -3,6 +3,7 @@ import calculateMean from './components/mean';
 import calculateStandardDeviation from './components/stdDev';
 import calculateVariance from './components/variance';
 import calculateKurtosis from './components/kurtosis';
+import detect from './components/detection';
 import React, { useEffect, useState } from 'react';
 import fetchData from './database/FetchData';
 import renderChart from './components/graph';
@@ -72,6 +73,21 @@ const App = () => {
     }
   }, [data, selectedComponent]);
 
+  //Detection
+  const [faultyStatus, setFaultyStatus] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const status = await detect();
+        setFaultyStatus(status);
+      } catch (error) {
+        console.error('Error fetching faulty value:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div>
       {/* Header */}
@@ -121,6 +137,13 @@ const App = () => {
               </div>
             </div>
           )}
+    <div>
+      {faultyStatus !== null && (
+        <h3 style={{ fontWeight: 'bold', color: faultyStatus ? 'green' : 'red' }}>
+          {faultyStatus ? 'No Fault Detected' : 'Fault Detected!'}
+        </h3>
+      )}
+    </div>
         </div>
       </main>
 
