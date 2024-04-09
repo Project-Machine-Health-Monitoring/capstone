@@ -9,16 +9,18 @@ import renderChart from './components/graph';
 import exportCSV from './components/exportCSV';
 import exportImage from './components/exportImage';
 import showHelpPopup from './components/help';
-import { showSettingsPopup, updateSettings } from './components/settings';
-
+import { showSettingsPopup } from './components/settings';
+import fetchFaultyStatus from './components/detection';
 
 const App = () => {
   const [data, setData] = useState([]);
   const [selectedComponent, setSelectedComponent] = useState('x');
   const [selectedSource, setSelectedSource] = useState('Raw');
+  const [faultyStatus, setFaultyStatus] = useState(null);
 
   useEffect(() => {
     updateGraph(); // Initial graph rendering when component mounts
+    fetchFaultyStatus().then(status => setFaultyStatus(status)); // Fetch initial faulty status
   }, [selectedSource]); // Re-render graph when selectedSource changes
 
   const handleComponentChange = (event) => {
@@ -119,6 +121,12 @@ const App = () => {
               <div className='statsInnerDiv4'>
                 <p><b>Kurtosis:</b> {statisticValue.kurtosis}</p>
               </div>
+            </div>
+          )}
+          {/* Display faulty status */}
+          {faultyStatus !== null && (
+            <div style={{ fontWeight: 'bold', color: faultyStatus ? 'red' : 'green', marginTop: '10px', padding: '5px' }}>
+              <p>{faultyStatus ? 'Fault Detected!' : 'Fault Not Detected'}</p>
             </div>
           )}
         </div>
