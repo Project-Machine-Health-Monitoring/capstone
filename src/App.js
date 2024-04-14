@@ -125,8 +125,8 @@ const App = () => {
           )}
           {/* Display faulty status */}
           {faultyStatus !== null && (
-            <div style={{ fontWeight: 'bold', color: faultyStatus ? 'red' : 'green', marginTop: '10px', padding: '5px' }}>
-              <p>{faultyStatus ? 'Fault Detected!' : 'Fault Not Detected'}</p>
+            <div style={{ fontWeight: 'bold', color: faultyStatus ? 'green' : 'red', marginTop: '10px', padding: '5px' }}>
+              <p>{faultyStatus ? 'Fault Not Detected!' : 'Fault Detected'}</p>
             </div>
           )}
         </div>
