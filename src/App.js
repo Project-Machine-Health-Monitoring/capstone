@@ -1,6 +1,7 @@
 import './index2.css';
 import calculateMean from './components/mean';
 import calculateStandardDeviation from './components/stdDev';
+import calculateSkewness from "./components/skewness";
 import calculateVariance from './components/variance';
 import calculateKurtosis from './components/kurtosis';
 import React, { useEffect, useState } from 'react';
@@ -50,7 +51,8 @@ const App = () => {
   const updateGraph = async () => {
     try {
       const newData = await fetchData(selectedSource);
-      console.log('New data fetched:', newData); // Log the fetched data
+       // Log the fetched data for debugging purposes
+      console.log('New data fetched:', newData);
       if (newData && newData.length > 0) {
         setData(newData);
         renderChart(newData);
@@ -63,14 +65,15 @@ const App = () => {
   };
   
   // Statistical Analysis
-  const [statisticValue, setStatisticValue] = useState({ mean: 0, variance: 0, stdDev: 0, kurtosis: 0 });
+  const [statisticValue, setStatisticValue] = useState({ mean: 0, variance: 0, stdDev: 0, kurtosis: 0, skewness: 0 });
   useEffect(() => {
     if (data.length > 0) {
       const mean = calculateMean(data, selectedComponent);
       const variance = calculateVariance(data, selectedComponent);
       const stdDev = calculateStandardDeviation(data, selectedComponent);
       const kurtosis = calculateKurtosis(data, selectedComponent);
-      setStatisticValue({ mean, variance, stdDev, kurtosis });
+      const skewness = calculateSkewness(data, selectedComponent);
+      setStatisticValue({ mean, variance, stdDev, kurtosis, skewness });
     }
   }, [data, selectedComponent]);
 
@@ -110,16 +113,19 @@ const App = () => {
           {selectedComponent && (
             <div className='statsOuterDiv'>
               <div className='statsInnerDiv1'>
-                <p><b>Mean:</b> {statisticValue.mean}</p>
+                <p><b>Mean:</b> {statisticValue.mean.toFixed(5)}</p>
               </div>
               <div className='statsInnerDiv2'>
-                <p><b>Variance:</b> {statisticValue.variance}</p>
+                <p><b>Variance:</b> {statisticValue.variance.toFixed(5)}</p>
               </div>
               <div className='statsInnerDiv3'>
-                <p><b>Standard Deviation:</b> {statisticValue.stdDev}</p>
+                <p><b>Standard Deviation:</b> {statisticValue.stdDev.toFixed(5)}</p>
               </div>
               <div className='statsInnerDiv4'>
-                <p><b>Kurtosis:</b> {statisticValue.kurtosis}</p>
+                <p><b>Kurtosis:</b> {statisticValue.kurtosis.toFixed(5)}</p>
+              </div>
+              <div className='statsInnerDiv4'>
+                <p><b>Skewness:</b> {statisticValue.skewness.toFixed(5)}</p>
               </div>
             </div>
           )}

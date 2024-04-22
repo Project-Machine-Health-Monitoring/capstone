@@ -40,11 +40,15 @@ const renderChart = (data) => {
     },
     options: {
       scales: {
-        yAxes: [{
+        y: {
+          title: {
+            display: true,
+            text: 'Amplitude'
+          },
           ticks: {
             beginAtZero: true
           }
-        }]
+        }
       },
       plugins: {
         datalabels: {

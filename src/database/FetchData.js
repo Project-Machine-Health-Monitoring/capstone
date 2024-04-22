@@ -6,9 +6,7 @@ async function fetchData(source) {
   let measurementColumn;
   let idColumn = 'id';
 
-  if (source === 'Raw') {
-    measurementColumn = 'measurement';
-  } else if (source === 'FFT' || source === 'TSA') {
+  if (source === 'Raw' || source === 'FFT' || source === 'TSA') {
     measurementColumn = 'measurement';
   } else {
     throw new Error('Invalid source specified.');
@@ -24,7 +22,8 @@ async function fetchData(source) {
     throw error;
   }
 
-  console.log('Fetched data:', latestData); // Log the fetched data
+  // Log the fetched data for debugging purposes
+  console.log('Fetched data:', latestData);
 
   if (!Array.isArray(latestData) || latestData.length === 0) {
     throw new Error('Fetched data is not valid');
@@ -36,10 +35,10 @@ async function fetchData(source) {
   let parsedData;
   if (source === 'Raw') {
     parsedData = parseRawData(measurement);
-  } else if (source === 'FFT' || source === 'TSA') {
+  } else if (source === 'FFT') {
     parsedData = parseFFTData(measurement);
-  } else {
-    parsedData = measurement;
+  } else if (source === 'TSA') {
+    parsedData = parseTSAData(measurement);
   }
 
   console.log('Parsed data:', parsedData);
@@ -86,24 +85,32 @@ function parseFFTData(fftData) {
       z: zData[index]
     }));
 
-    return combinedData;
-  } else {
-    // If the data doesn't have 'x', 'y', 'z' keys, treat it as TSA data
+    return combinedData;}}
 
-    // Extract values from the object
-    const values = Object.values(data);
-    const keys = Object.keys(data);
 
-    // Combine keys and values into a single array of objects
-    const combinedData = keys.map((key, index) => ({
-      t: parseFloat(values[index].KEY),
-      x: values[index].VALUE,
-      y: null,
-      z: null
-    }));
 
-    return combinedData;
+function parseTSAData(tsaData) {
+  // Parse the JSON string into a JavaScript object
+  const data = JSON.parse(tsaData);
+
+  // Initialize an array to store the parsed data
+  const parsedData = [];
+
+  // Iterate through the 'x' data
+  for (const key of Object.keys(data.x)) {
+    // Extract the 'VALUE' for each axis ('x', 'y', 'z')
+    const x = parseFloat(data.x[key].VALUE);
+    const y = parseFloat(data.y[key].VALUE);
+    const z = parseFloat(data.z[key].VALUE);
+
+    // Convert the key to a number for 't'
+    const t = parseFloat(key);
+
+    // Push the extracted values into the parsedData array
+    parsedData.push({ t, x, y, z });
   }
+
+  return parsedData;
 }
 
 export default fetchData;
