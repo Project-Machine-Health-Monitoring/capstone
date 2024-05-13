@@ -1,6 +1,6 @@
 {
-  "homepage": "https://project-machine-health-monitoring.github.io/capstoneWeb/",
-  "name": "capstoneWeb",
+  "homepage": "https://project-machine-health-monitoring.github.io/capstone/",
+  "name": "capstone",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
